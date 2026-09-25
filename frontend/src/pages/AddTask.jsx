@@ -1,10 +1,14 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
+import { useTasks } from "../context/TaskContext";
+
 
 function AddTask() {
 
   const navigate = useNavigate();
+
+  const { addTask } = useTasks();
 
 
   const [task, setTask] = useState({
@@ -35,7 +39,13 @@ function AddTask() {
 
     e.preventDefault();
 
-    console.log("Task created:", task);
+
+    if (!task.title.trim()) {
+      return;
+    }
+
+
+    addTask(task);
 
     alert("Task added successfully!");
 
@@ -47,7 +57,6 @@ function AddTask() {
   return (
 
     <div>
-
 
       {/* Heading */}
       <div className="page-heading">
@@ -112,7 +121,6 @@ function AddTask() {
           {/* Priority + Date */}
           <div className="form-row">
 
-
             <div className="form-group">
 
               <label>
@@ -126,9 +134,7 @@ function AddTask() {
               >
 
                 <option>Low</option>
-
                 <option>Medium</option>
-
                 <option>High</option>
 
               </select>
@@ -150,7 +156,6 @@ function AddTask() {
               />
 
             </div>
-
 
           </div>
 
@@ -200,7 +205,6 @@ function AddTask() {
       </div>
 
     </div>
-
   );
 }
 

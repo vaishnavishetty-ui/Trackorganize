@@ -2,79 +2,44 @@ import {
   CheckCircle2,
   Clock3,
   ListTodo,
-  ArrowRight
+  ArrowRight,
 } from "lucide-react";
 
 import { Link } from "react-router-dom";
-
-
-const todayTasks = [
-  {
-    id: 1,
-    title: "Finish React components",
-    priority: "High",
-    time: "10:00 AM",
-    completed: false
-  },
-  {
-    id: 2,
-    title: "Study for DSA",
-    priority: "Medium",
-    time: "2:00 PM",
-    completed: false
-  },
-  {
-    id: 3,
-    title: "Update GitHub repository",
-    priority: "Low",
-    time: "5:00 PM",
-    completed: true
-  },
-  {
-    id: 4,
-    title: "Prepare for Jenkins setup",
-    priority: "High",
-    time: "7:00 PM",
-    completed: false
-  },
-  {
-    id: 5,
-    title: "Read a chapter",
-    priority: "Medium",
-    time: "9:00 PM",
-    completed: false
-  }
-];
-
+import { useTasks } from "../context/TaskContext";
 
 function Dashboard() {
+  const { tasks, toggleTask } = useTasks();
+
+  const completedTasks = tasks.filter((task) => task.completed).length;
+  const pendingTasks = tasks.filter((task) => !task.completed).length;
+
+  const totalTasks = tasks.length;
+
+  const progress =
+    totalTasks === 0
+      ? 0
+      : Math.round((completedTasks / totalTasks) * 100);
 
   return (
-
     <div>
 
       {/* Page Heading */}
       <div className="page-heading">
-
         <div>
-
-          <h1>
-            Good Morning, Tanuja! 👋
-          </h1>
+          <h1>Good Morning, Tanuja! 👋</h1>
 
           <p>
             Stay focused. Get things done.
           </p>
-
         </div>
-
       </div>
 
 
       {/* Statistics */}
       <div className="stats-grid">
 
-
+        {/* Total */}
         <div className="stat-card">
 
           <div className="stat-icon blue">
@@ -83,11 +48,12 @@ function Dashboard() {
 
           <span>Total Tasks</span>
 
-          <strong>8</strong>
+          <strong>{totalTasks}</strong>
 
         </div>
 
 
+        {/* Completed */}
         <div className="stat-card">
 
           <div className="stat-icon green">
@@ -96,11 +62,12 @@ function Dashboard() {
 
           <span>Completed</span>
 
-          <strong>3</strong>
+          <strong>{completedTasks}</strong>
 
         </div>
 
 
+        {/* Pending */}
         <div className="stat-card">
 
           <div className="stat-icon yellow">
@@ -109,32 +76,34 @@ function Dashboard() {
 
           <span>Pending</span>
 
-          <strong>5</strong>
+          <strong>{pendingTasks}</strong>
 
         </div>
 
 
+        {/* Progress */}
         <div className="stat-card progress-card">
 
           <span>Overall Progress</span>
 
-          <strong>38%</strong>
+          <strong>{progress}%</strong>
 
           <div className="progress-bar">
 
-            <div className="progress-fill"></div>
+            <div
+              className="progress-fill"
+              style={{ width: `${progress}%` }}
+            ></div>
 
           </div>
 
         </div>
-
 
       </div>
 
 
       {/* Today's Tasks */}
       <div className="dashboard-grid">
-
 
         <div className="panel">
 
@@ -153,27 +122,35 @@ function Dashboard() {
 
           <div className="task-list">
 
-            {todayTasks.map((task) => (
+            {tasks.map((task) => (
 
               <div
                 className="dashboard-task"
                 key={task.id}
               >
 
-                <div
+                {/* Checkbox */}
+                <button
                   className={`checkbox ${
                     task.completed ? "checked" : ""
                   }`}
+                  onClick={() => toggleTask(task.id)}
+                  aria-label="Toggle task"
                 >
                   {task.completed && "✓"}
-                </div>
+                </button>
 
 
-                <span className="task-title">
+                {/* Task title */}
+                <Link
+                  to={`/tasks/${task.id}`}
+                  className="task-title"
+                >
                   {task.title}
-                </span>
+                </Link>
 
 
+                {/* Priority */}
                 <span
                   className={`priority ${task.priority.toLowerCase()}`}
                 >
@@ -181,11 +158,13 @@ function Dashboard() {
                 </span>
 
 
+                {/* Time */}
                 <span className="task-time">
-                  {task.time}
+                  {task.dueDate || "Today"}
                 </span>
 
 
+                {/* Details */}
                 <Link to={`/tasks/${task.id}`}>
                   <ArrowRight size={17} />
                 </Link>
@@ -220,13 +199,10 @@ function Dashboard() {
 
         </div>
 
-
       </div>
 
     </div>
-
   );
 }
-
 
 export default Dashboard;
