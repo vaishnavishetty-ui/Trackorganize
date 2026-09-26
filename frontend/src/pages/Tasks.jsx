@@ -2,291 +2,156 @@ import {
   Search,
   Pencil,
   Trash2,
-  CalendarDays,
+  CalendarDays
 } from "lucide-react";
 
-import { Link, useNavigate } from "react-router-dom";
-import { useState } from "react";
+import { Link } from "react-router-dom";
 
-import { useTasks } from "../context/TaskContext";
+
+const tasks = [
+  {
+    id: 1,
+    title: "Finish React components",
+    description: "Complete the UI for all pages",
+    priority: "High",
+    category: "Development"
+  },
+  {
+    id: 2,
+    title: "Study for DSA",
+    description: "Revise arrays, strings and recursion",
+    priority: "Medium",
+    category: "Study"
+  },
+  {
+    id: 3,
+    title: "Update GitHub repository",
+    description: "Push latest changes and update README",
+    priority: "Low",
+    category: "Git"
+  },
+  {
+    id: 4,
+    title: "Prepare for Jenkins setup",
+    description: "Install Jenkins and configure pipeline",
+    priority: "High",
+    category: "DevOps"
+  },
+  {
+    id: 5,
+    title: "Read a chapter",
+    description: "Read 1 chapter of the current book",
+    priority: "Medium",
+    category: "Personal"
+  }
+];
+
 
 function Tasks() {
-  const {
-    tasks,
-    toggleTask,
-    deleteTask,
-  } = useTasks();
-
-  const navigate = useNavigate();
-
-  const [search, setSearch] = useState("");
-  const [filter, setFilter] = useState("All");
-
-
-  // Search + filter
-  const filteredTasks = tasks.filter((task) => {
-
-    const matchesSearch =
-      task.title
-        .toLowerCase()
-        .includes(search.toLowerCase()) ||
-      task.description
-        .toLowerCase()
-        .includes(search.toLowerCase());
-
-
-    const matchesFilter =
-      filter === "All" ||
-      (filter === "Pending" && !task.completed) ||
-      (filter === "Completed" && task.completed);
-
-
-    return matchesSearch && matchesFilter;
-  });
-
-
-  // Priority order
-  const priorityOrder = {
-    High: 1,
-    Medium: 2,
-    Low: 3,
-  };
-
-
-  // Sort:
-  // 1. Pending first
-  // 2. High → Medium → Low
-  // 3. Completed at bottom
-  const sortedTasks = [...filteredTasks].sort((a, b) => {
-
-    // Pending before completed
-    if (a.completed !== b.completed) {
-      return a.completed ? 1 : -1;
-    }
-
-    // Same completion status → priority
-    return (
-      (priorityOrder[a.priority] || 4) -
-      (priorityOrder[b.priority] || 4)
-    );
-  });
-
-
-  const handleDelete = (id) => {
-
-    const confirmed = window.confirm(
-      "Are you sure you want to delete this task?"
-    );
-
-    if (confirmed) {
-      deleteTask(id);
-    }
-  };
-
 
   return (
-
     <div>
-
-      {/* Heading */}
       <div className="page-heading">
-
         <div>
 
-          <h1>
-            Tasks
-          </h1>
+          <h1>Tasks</h1>
 
           <p>
             Manage and keep track of all your tasks.
           </p>
 
         </div>
-
-
-        <Link
-          to="/add-task"
-          className="primary-button"
-        >
+        <Link to="/add-task" className="primary-button">
           + Add Task
         </Link>
-
       </div>
 
-
-      {/* Search + Filters */}
       <div className="task-controls">
 
+
         <div className="search-box">
-
           <Search size={18} />
-
           <input
             placeholder="Search tasks..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
           />
-
         </div>
 
 
-        <button
-          className={`filter ${
-            filter === "All"
-              ? "active-filter"
-              : ""
-          }`}
-          onClick={() => setFilter("All")}
-        >
+        <button className="filter active-filter">
           All
         </button>
 
-
-        <button
-          className={`filter ${
-            filter === "Pending"
-              ? "active-filter"
-              : ""
-          }`}
-          onClick={() => setFilter("Pending")}
-        >
+        <button className="filter">
           Pending
         </button>
 
-
-        <button
-          className={`filter ${
-            filter === "Completed"
-              ? "active-filter"
-              : ""
-          }`}
-          onClick={() => setFilter("Completed")}
-        >
+        <button className="filter">
           Completed
         </button>
 
+
       </div>
 
-
-      {/* Task List */}
       <div className="tasks-panel">
 
-        {sortedTasks.map((task) => (
+        {tasks.map((task) => (
 
           <div
             className="task-row"
             key={task.id}
           >
 
-            {/* Checkbox */}
-            <button
-              type="button"
-              className={`checkbox ${
-                task.completed ? "checked" : ""
-              }`}
-              onClick={() => toggleTask(task.id)}
-            >
-              {task.completed && "✓"}
-            </button>
+            <div className="checkbox"></div>
 
 
-            {/* Task information */}
             <div className="task-main">
-
               <Link to={`/tasks/${task.id}`}>
 
-                <strong
-                  style={{
-                    textDecoration: task.completed
-                      ? "line-through"
-                      : "none",
-                  }}
-                >
+                <strong>
                   {task.title}
                 </strong>
-
               </Link>
-
-              <p>
-                {task.description}
-              </p>
-
+              <p>{task.description}</p>
             </div>
 
 
-            {/* Priority */}
             <span
               className={`priority ${task.priority.toLowerCase()}`}
             >
               {task.priority}
             </span>
 
-
             {/* Date */}
             <span className="task-date">
-
               <CalendarDays size={15} />
 
-              {task.dueDate || "No date"}
+              Apr 27, 2025
 
             </span>
 
 
-            {/* Category */}
             <span className="category">
-
-              {task.category || "General"}
-
+              {task.category}
             </span>
 
 
             {/* Actions */}
             <div className="row-actions">
 
-              <button
-                type="button"
-                onClick={() =>
-                  navigate(`/tasks/${task.id}`)
-                }
-                title="Edit task"
-              >
+              <button>
                 <Pencil size={16} />
               </button>
 
-
-              <button
-                type="button"
-                className="delete"
-                onClick={() =>
-                  handleDelete(task.id)
-                }
-                title="Delete task"
-              >
+              <button className="delete">
                 <Trash2 size={16} />
               </button>
-
             </div>
-
           </div>
-
         ))}
 
-
-        {sortedTasks.length === 0 && (
-
-          <div
-            style={{
-              padding: "30px",
-              textAlign: "center"
-            }}
-          >
-            No tasks found.
-          </div>
-
-        )}
-
       </div>
-
     </div>
   );
 }

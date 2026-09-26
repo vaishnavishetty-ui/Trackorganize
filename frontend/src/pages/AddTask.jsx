@@ -3,49 +3,31 @@ import { useNavigate } from "react-router-dom";
 
 import { useTasks } from "../context/TaskContext";
 
+const API_URL = "http://localhost:8080/api/todos";
 
 function AddTask() {
-
   const navigate = useNavigate();
-
-  const { addTask } = useTasks();
 
 
   const [task, setTask] = useState({
-
     title: "",
     description: "",
     priority: "Medium",
     dueDate: "",
     category: ""
-
   });
 
-
   const handleChange = (e) => {
-
     setTask({
-
       ...task,
-
       [e.target.name]: e.target.value
-
     });
-
   };
 
-
-  const handleSubmit = (e) => {
-
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
-
-    if (!task.title.trim()) {
-      return;
-    }
-
-
-    addTask(task);
+    console.log("Task created:", task);
 
     alert("Task added successfully!");
 
@@ -53,42 +35,22 @@ function AddTask() {
 
   };
 
-
   return (
-
     <div>
+
 
       {/* Heading */}
       <div className="page-heading">
-
         <div>
-
-          <h1>
-            Add Task
-          </h1>
-
-          <p>
-            Fill in the details to create a new task.
-          </p>
-
+          <h1>Add Task</h1>
+          <p>Fill in the details to create a new task.</p>
         </div>
-
       </div>
 
-
-      {/* Form */}
       <div className="form-panel">
-
         <form onSubmit={handleSubmit}>
-
-
-          {/* Title */}
           <div className="form-group">
-
-            <label>
-              Task Title <span>*</span>
-            </label>
-
+            <label>Task Title <span>*</span></label>
             <input
               type="text"
               name="title"
@@ -97,76 +59,45 @@ function AddTask() {
               onChange={handleChange}
               required
             />
-
           </div>
 
-
-          {/* Description */}
           <div className="form-group">
-
-            <label>
-              Description
-            </label>
-
+            <label>Description</label>
             <textarea
               name="description"
               placeholder="Enter task description (optional)"
               value={task.description}
               onChange={handleChange}
             />
-
           </div>
 
-
-          {/* Priority + Date */}
           <div className="form-row">
 
+
             <div className="form-group">
-
-              <label>
-                Priority
-              </label>
-
-              <select
-                name="priority"
-                value={task.priority}
-                onChange={handleChange}
-              >
-
+              <label>Priority</label>
+              <select name="priority" value={task.priority} onChange={handleChange}>
                 <option>Low</option>
                 <option>Medium</option>
                 <option>High</option>
-
               </select>
-
             </div>
 
-
             <div className="form-group">
-
-              <label>
-                Due Date
-              </label>
-
+              <label>Due Date</label>
               <input
                 type="date"
                 name="dueDate"
                 value={task.dueDate}
                 onChange={handleChange}
               />
-
             </div>
+
 
           </div>
 
-
-          {/* Category */}
           <div className="form-group">
-
-            <label>
-              Category / Tag
-            </label>
-
+            <label>Category / Tag</label>
             <input
               type="text"
               name="category"
@@ -174,13 +105,9 @@ function AddTask() {
               value={task.category}
               onChange={handleChange}
             />
-
           </div>
 
-
-          {/* Buttons */}
           <div className="form-actions">
-
             <button
               type="button"
               className="secondary-button"
@@ -189,24 +116,14 @@ function AddTask() {
               Cancel
             </button>
 
-
-            <button
-              type="submit"
-              className="primary-button"
-            >
+            <button type="submit" className="primary-button">
               Add Task
             </button>
-
           </div>
-
-
         </form>
-
       </div>
-
     </div>
   );
 }
-
 
 export default AddTask;
