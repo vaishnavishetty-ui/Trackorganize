@@ -1,10 +1,13 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-const API_URL = "http://localhost:8080/api/todos";
+import { useTasks } from "../context/TaskContext";
+
+const API_URL = "http://localhost:8081/api/todos";
 
 function AddTask() {
   const navigate = useNavigate();
+
 
   const [task, setTask] = useState({
     title: "",
@@ -24,23 +27,19 @@ function AddTask() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    try {
-      const res = await fetch(API_URL, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ...task, completed: false }),
-      });
+    console.log("Task created:", task);
 
-      if (res.ok) {
-        navigate("/tasks");
-      }
-    } catch (err) {
-      console.error("Failed to add task:", err);
-    }
+    alert("Task added successfully!");
+
+    navigate("/tasks");
+
   };
 
   return (
     <div>
+
+
+      {/* Heading */}
       <div className="page-heading">
         <div>
           <h1>Add Task</h1>
@@ -73,6 +72,8 @@ function AddTask() {
           </div>
 
           <div className="form-row">
+
+
             <div className="form-group">
               <label>Priority</label>
               <select name="priority" value={task.priority} onChange={handleChange}>
@@ -91,6 +92,8 @@ function AddTask() {
                 onChange={handleChange}
               />
             </div>
+
+
           </div>
 
           <div className="form-group">

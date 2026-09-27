@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { CheckCircle2, Clock3, ListTodo, ArrowRight } from "lucide-react";
 import { Link } from "react-router-dom";
 
-const API_URL = "http://localhost:8080/api/todos";
+const API_URL = "http://localhost:8081/api/todos";
 
 function Dashboard() {
   const [tasks, setTasks] = useState([]);
