@@ -34,11 +34,38 @@ pipeline {
                 bat 'cd backend && docker build -t trackorganize-backend:1.0 .'
             }
         }
+
+        stage('Docker Push') {
+            steps {
+                withCredentials([
+                    usernamePassword(
+                        credentialsId: 'dockerhub-credentials',
+                        usernameVariable: 'DOCKER_USERNAME',
+                        passwordVariable: 'DOCKER_PASSWORD'
+                    )
+                ]) {
+
+                    echo 'Logging in to Docker Hub'
+
+                    bat 'docker login -u "%DOCKER_USERNAME%" -p "%DOCKER_PASSWORD%"'
+
+                    echo 'Tagging Docker image'
+
+                    bat 'docker tag trackorganize-backend:1.0 %DOCKER_USERNAME%/trackorganize-backend:1.0'
+
+                    echo 'Pushing Docker image to Docker Hub'
+
+                    bat 'docker push %DOCKER_USERNAME%/trackorganize-backend:1.0'
+
+                    bat 'docker logout'
+                }
+            }
+        }
     }
 
     post {
         success {
-            echo 'Trackorganize Pipeline completed successfully!'
+            echo 'Complete Trackorganize CI/CD Pipeline completed successfully!'
         }
 
         failure {
