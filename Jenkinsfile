@@ -23,14 +23,24 @@ pipeline {
 
         stage('Test') {
             steps {
-                echo 'Running Selenium and application tests'
-                bat 'cd backend && mvn test'
+                echo 'Starting React frontend'
+
+                bat '''
+                cd frontend
+                start "React App" /B cmd /c "npm run dev -- --host 127.0.0.1 > frontend.log 2>&1"
+                timeout /t 10 /nobreak
+                '''
+
+                echo 'Running Selenium test'
+
+                bat 'cd backend && mvn -Dtest=SeleniumTest test'
             }
         }
 
         stage('Docker Build') {
             steps {
                 echo 'Building Docker image'
+
                 bat 'cd backend && docker build -t trackorganize-backend:1.0 .'
             }
         }
@@ -56,6 +66,8 @@ pipeline {
                     echo 'Pushing Docker image to Docker Hub'
 
                     bat 'docker push %DOCKER_USERNAME%/trackorganize-backend:1.0'
+
+                    echo 'Logging out from Docker Hub'
 
                     bat 'docker logout'
                 }
