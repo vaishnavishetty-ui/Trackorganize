@@ -27,6 +27,13 @@ pipeline {
                 bat 'cd backend && mvn test'
             }
         }
+
+        stage('Docker Build') {
+            steps {
+                echo 'Building Docker image'
+                bat 'cd backend && docker build -t trackorganize-backend:1.0 .'
+            }
+        }
     }
 
     post {
