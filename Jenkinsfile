@@ -5,11 +5,21 @@ pipeline {
         maven 'Maven3'
     }
 
+    environment {
+        // Docker Desktop CLI
+        DOCKER_EXE = 'C:\\Users\\IT\\AppData\\Local\\Programs\\DockerDesktop\\resources\\bin\\docker.exe'
+
+        // Docker Desktop Windows named pipe
+        DOCKER_HOST = 'npipe:////./pipe/docker_engine'
+    }
+
     stages {
 
         stage('Build') {
             steps {
+                echo '========================================'
                 echo 'Building Spring Boot backend'
+                echo '========================================'
 
                 bat '''
                     cd backend
@@ -18,14 +28,17 @@ pipeline {
             }
         }
 
+
         stage('Start Backend') {
             steps {
+                echo '========================================'
                 echo 'Starting Spring Boot backend'
+                echo '========================================'
 
                 bat '''
                     if exist backend\\backend.log del /f /q backend\\backend.log
 
-                    start "Spring Boot" /B cmd /c "cd /d backend && java -jar target\\backend-0.0.1-SNAPSHOT.jar > backend\\backend.log 2>&1"
+                    start "Spring Boot" /B cmd /c "cd /d backend && java -jar target\\backend-0.0.1-SNAPSHOT.jar > backend.log 2>&1"
                 '''
 
                 echo 'Waiting for backend to start...'
@@ -38,9 +51,12 @@ pipeline {
             }
         }
 
+
         stage('Start Frontend') {
             steps {
+                echo '========================================'
                 echo 'Installing frontend dependencies'
+                echo '========================================'
 
                 bat '''
                     cd frontend
@@ -70,9 +86,12 @@ pipeline {
             }
         }
 
+
         stage('Test') {
             steps {
+                echo '========================================'
                 echo 'Running Selenium tests'
+                echo '========================================'
 
                 bat '''
                     cd backend
@@ -81,31 +100,51 @@ pipeline {
             }
         }
 
+
         stage('Docker Check') {
             steps {
-                echo 'Checking Docker'
+                echo '========================================'
+                echo 'Checking Docker installation'
+                echo '========================================'
 
                 bat '''
+                    echo Docker executable:
+                    "%DOCKER_EXE%" --version
+
+                    echo.
+                    echo Docker location:
                     where.exe docker
-                    docker --version
-                    docker info
+
+                    echo.
+                    echo Docker context:
+                    "%DOCKER_EXE%" context show
+
+                    echo.
+                    echo Docker info:
+                    "%DOCKER_EXE%" -H "%DOCKER_HOST%" info
                 '''
             }
         }
+
 
         stage('Docker Build') {
             steps {
+                echo '========================================'
                 echo 'Building Docker image'
+                echo '========================================'
 
                 bat '''
                     cd backend
-                    docker build -t trackorganize-backend:1.0 .
+
+                    "%DOCKER_EXE%" -H "%DOCKER_HOST%" build --progress=plain -t trackorganize-backend:1.0 .
                 '''
             }
         }
 
+
         stage('Docker Push') {
             steps {
+
                 withCredentials([
                     usernamePassword(
                         credentialsId: 'dockerhub-credentials',
@@ -114,41 +153,58 @@ pipeline {
                     )
                 ]) {
 
+                    echo '========================================'
                     echo 'Logging in to Docker Hub'
+                    echo '========================================'
 
                     bat '''
-                        docker login -u "%DOCKER_USERNAME%" -p "%DOCKER_PASSWORD%"
+                        "%DOCKER_EXE%" -H "%DOCKER_HOST%" login -u "%DOCKER_USERNAME%" -p "%DOCKER_PASSWORD%"
                     '''
 
+
+                    echo '========================================'
                     echo 'Tagging Docker image'
+                    echo '========================================'
 
                     bat '''
-                        docker tag trackorganize-backend:1.0 %DOCKER_USERNAME%/trackorganize-backend:1.0
+                        "%DOCKER_EXE%" -H "%DOCKER_HOST%" tag trackorganize-backend:1.0 %DOCKER_USERNAME%/trackorganize-backend:1.0
                     '''
 
+
+                    echo '========================================'
                     echo 'Pushing Docker image to Docker Hub'
+                    echo '========================================'
 
                     bat '''
-                        docker push %DOCKER_USERNAME%/trackorganize-backend:1.0
+                        "%DOCKER_EXE%" -H "%DOCKER_HOST%" push %DOCKER_USERNAME%/trackorganize-backend:1.0
                     '''
 
+
+                    echo '========================================'
                     echo 'Logging out from Docker Hub'
+                    echo '========================================'
 
                     bat '''
-                        docker logout
+                        "%DOCKER_EXE%" -H "%DOCKER_HOST%" logout
                     '''
                 }
             }
         }
     }
 
+
     post {
+
         success {
-            echo 'Complete Trackorganize CI/CD Pipeline completed successfully!'
+            echo '========================================'
+            echo 'COMPLETE TRACKORGANIZE CI/CD PIPELINE SUCCESS!'
+            echo '========================================'
         }
 
         failure {
-            echo 'Trackorganize Pipeline failed.'
+            echo '========================================'
+            echo 'TRACKORGANIZE PIPELINE FAILED'
+            echo '========================================'
         }
     }
 }
