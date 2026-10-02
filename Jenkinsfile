@@ -76,10 +76,9 @@ pipeline {
         stage('Docker Build') {
             steps {
                 echo 'Building Docker image'
-
                 bat '''
                     cd backend
-                    "C:\\Users\\IT\\AppData\\Local\\Programs\\DockerDesktop\\resources\\bin\\docker.exe" build -t trackorganize-backend:1.0 .
+                    docker build -t trackorganize-backend:1.0 .
                 '''
             }
         }
