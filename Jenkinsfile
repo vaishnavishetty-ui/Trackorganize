@@ -6,10 +6,7 @@ pipeline {
     }
 
     environment {
-        // Docker Desktop CLI
         DOCKER_EXE = 'C:\\Users\\IT\\AppData\\Local\\Programs\\DockerDesktop\\resources\\bin\\docker.exe'
-
-        // Docker Desktop Windows named pipe
         DOCKER_HOST = 'npipe:////./pipe/docker_engine'
     }
 
@@ -136,7 +133,7 @@ pipeline {
                 bat '''
                     cd backend
 
-                    "%DOCKER_EXE%" -H "%DOCKER_HOST%" build --progress=plain -t trackorganize-backend:1.0 .
+                    "%DOCKER_EXE%" -H "%DOCKER_HOST%" build -t trackorganize-backend:1.0 .
                 '''
             }
         }
