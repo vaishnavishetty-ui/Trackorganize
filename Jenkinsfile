@@ -35,18 +35,30 @@ pipeline {
             }
         }
 
-        stage('Start Frontend') {
+                stage('Start Frontend') {
             steps {
+                echo 'Installing frontend dependencies'
+
+                bat '''
+                    cd frontend
+                    if exist node_modules rmdir /s /q node_modules
+                    npm install
+                '''
+
                 echo 'Starting React frontend'
 
                 bat '''
-                    start "React App" /B cmd /c "cd frontend && npm run dev -- --host 127.0.0.1 > frontend.log 2>&1"
+                    cd frontend
+
+                    if exist frontend.log del /f /q frontend.log
+
+                    start "React App" /B cmd /c "npm.cmd run dev -- --host 127.0.0.1 > frontend.log 2>&1"
                 '''
 
                 echo 'Waiting for frontend to start...'
 
                 bat '''
-                    powershell -NoProfile -Command "$deadline=(Get-Date).AddSeconds(30); do { if ((Test-NetConnection -ComputerName 127.0.0.1 -Port 5173 -WarningAction SilentlyContinue).TcpTestSucceeded) { exit 0 }; Start-Sleep -Seconds 2 } while ((Get-Date) -lt $deadline); Write-Host 'Frontend failed to start'; exit 1"
+                    powershell -NoProfile -Command "$deadline=(Get-Date).AddSeconds(45); do { if ((Test-NetConnection -ComputerName 127.0.0.1 -Port 5173 -WarningAction SilentlyContinue).TcpTestSucceeded) { exit 0 }; Start-Sleep -Seconds 2 } while ((Get-Date) -lt $deadline); Write-Host '===== FRONTEND LOG ====='; if (Test-Path 'frontend\\frontend.log') { Get-Content 'frontend\\frontend.log' } else { Write-Host 'frontend.log was not created' }; Write-Host '===== NODE/NPM CHECK ====='; where.exe node; where.exe npm; node --version; npm --version; exit 1"
                 '''
 
                 echo 'Frontend is running on port 5173'
