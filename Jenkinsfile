@@ -11,7 +11,10 @@ pipeline {
             steps {
                 echo 'Building Spring Boot backend'
 
-                bat 'cd backend && mvn clean package -DskipTests'
+                bat '''
+                    cd backend
+                    mvn clean package -DskipTests
+                '''
             }
         }
 
@@ -20,9 +23,9 @@ pipeline {
                 echo 'Starting Spring Boot backend'
 
                 bat '''
-                    if exist backend.log del /f /q backend.log
+                    if exist backend\\backend.log del /f /q backend\\backend.log
 
-                    start "Spring Boot" /B cmd /c "cd /d backend && java -jar target\\backend-0.0.1-SNAPSHOT.jar > backend.log 2>&1"
+                    start "Spring Boot" /B cmd /c "cd /d backend && java -jar target\\backend-0.0.1-SNAPSHOT.jar > backend\\backend.log 2>&1"
                 '''
 
                 echo 'Waiting for backend to start...'
@@ -35,13 +38,15 @@ pipeline {
             }
         }
 
-                stage('Start Frontend') {
+        stage('Start Frontend') {
             steps {
                 echo 'Installing frontend dependencies'
 
                 bat '''
                     cd frontend
+
                     if exist node_modules rmdir /s /q node_modules
+
                     npm install
                 '''
 
@@ -69,13 +74,29 @@ pipeline {
             steps {
                 echo 'Running Selenium tests'
 
-                bat 'cd backend && mvn -Dtest=SeleniumTest test'
+                bat '''
+                    cd backend
+                    mvn -Dtest=SeleniumTest test
+                '''
+            }
+        }
+
+        stage('Docker Check') {
+            steps {
+                echo 'Checking Docker'
+
+                bat '''
+                    where.exe docker
+                    docker --version
+                    docker info
+                '''
             }
         }
 
         stage('Docker Build') {
             steps {
                 echo 'Building Docker image'
+
                 bat '''
                     cd backend
                     docker build -t trackorganize-backend:1.0 .
@@ -96,25 +117,25 @@ pipeline {
                     echo 'Logging in to Docker Hub'
 
                     bat '''
-                        "C:\\Users\\IT\\AppData\\Local\\Programs\\DockerDesktop\\resources\\bin\\docker.exe" login -u "%DOCKER_USERNAME%" -p "%DOCKER_PASSWORD%"
+                        docker login -u "%DOCKER_USERNAME%" -p "%DOCKER_PASSWORD%"
                     '''
 
                     echo 'Tagging Docker image'
 
                     bat '''
-                        "C:\\Users\\IT\\AppData\\Local\\Programs\\DockerDesktop\\resources\\bin\\docker.exe" tag trackorganize-backend:1.0 %DOCKER_USERNAME%/trackorganize-backend:1.0
+                        docker tag trackorganize-backend:1.0 %DOCKER_USERNAME%/trackorganize-backend:1.0
                     '''
 
                     echo 'Pushing Docker image to Docker Hub'
 
                     bat '''
-                        "C:\\Users\\IT\\AppData\\Local\\Programs\\DockerDesktop\\resources\\bin\\docker.exe" push %DOCKER_USERNAME%/trackorganize-backend:1.0
+                        docker push %DOCKER_USERNAME%/trackorganize-backend:1.0
                     '''
 
                     echo 'Logging out from Docker Hub'
 
                     bat '''
-                        "C:\\Users\\IT\\AppData\\Local\\Programs\\DockerDesktop\\resources\\bin\\docker.exe" logout
+                        docker logout
                     '''
                 }
             }
