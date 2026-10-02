@@ -5,11 +5,6 @@ pipeline {
         maven 'Maven3'
     }
 
-    environment {
-        DOCKER_EXE = 'C:\\Users\\IT\\AppData\\Local\\Programs\\DockerDesktop\\resources\\bin\\docker.exe'
-        DOCKER_HOST = 'npipe:////./pipe/docker_engine'
-    }
-
     stages {
 
         stage('Build') {
@@ -24,7 +19,6 @@ pipeline {
                 '''
             }
         }
-
 
         stage('Start Backend') {
             steps {
@@ -47,7 +41,6 @@ pipeline {
                 echo 'Backend is running on port 8081'
             }
         }
-
 
         stage('Start Frontend') {
             steps {
@@ -83,7 +76,6 @@ pipeline {
             }
         }
 
-
         stage('Test') {
             steps {
                 echo '========================================'
@@ -97,7 +89,6 @@ pipeline {
             }
         }
 
-
         stage('Docker Check') {
             steps {
                 echo '========================================'
@@ -106,7 +97,7 @@ pipeline {
 
                 bat '''
                     echo Docker executable:
-                    "%DOCKER_EXE%" --version
+                    "C:\\Users\\IT\\AppData\\Local\\Programs\\DockerDesktop\\resources\\bin\\docker.exe" --version
 
                     echo.
                     echo Docker location:
@@ -114,15 +105,14 @@ pipeline {
 
                     echo.
                     echo Docker context:
-                    "%DOCKER_EXE%" context show
+                    "C:\\Users\\IT\\AppData\\Local\\Programs\\DockerDesktop\\resources\\bin\\docker.exe" context show
 
                     echo.
                     echo Docker info:
-                    "%DOCKER_EXE%" -H "%DOCKER_HOST%" info
+                    "C:\\Users\\IT\\AppData\\Local\\Programs\\DockerDesktop\\resources\\bin\\docker.exe" -H "npipe:////./pipe/docker_engine" info
                 '''
             }
         }
-
 
         stage('Docker Build') {
             steps {
@@ -133,18 +123,17 @@ pipeline {
                 bat '''
                     cd backend
 
-                    "%DOCKER_EXE%" -H "%DOCKER_HOST%" build -t trackorganize-backend:1.0 .
+                    "C:\\Users\\IT\\AppData\\Local\\Programs\\DockerDesktop\\resources\\bin\\docker.exe" -H "npipe:////./pipe/docker_engine" build -t trackorganize-backend:1.0 .
                 '''
             }
         }
-
 
         stage('Docker Push') {
             steps {
 
                 withCredentials([
                     usernamePassword(
-                        credentialsId: 'dockerhub-credentials',
+                        credentialsId: '5a0a5d64-e02d-47ff-a3c4-db3ea5f84ab',
                         usernameVariable: 'DOCKER_USERNAME',
                         passwordVariable: 'DOCKER_PASSWORD'
                     )
@@ -155,46 +144,47 @@ pipeline {
                     echo '========================================'
 
                     bat '''
-                        "%DOCKER_EXE%" -H "%DOCKER_HOST%" login -u "%DOCKER_USERNAME%" -p "%DOCKER_PASSWORD%"
+                        echo %DOCKER_PASSWORD% | "C:\\Users\\IT\\AppData\\Local\\Programs\\DockerDesktop\\resources\\bin\\docker.exe" -H "npipe:////./pipe/docker_engine" login -u "%DOCKER_USERNAME%" --password-stdin
                     '''
 
+                    echo 'Docker login successful'
 
                     echo '========================================'
                     echo 'Tagging Docker image'
                     echo '========================================'
 
                     bat '''
-                        "%DOCKER_EXE%" -H "%DOCKER_HOST%" tag trackorganize-backend:1.0 %DOCKER_USERNAME%/trackorganize-backend:1.0
+                        "C:\\Users\\IT\\AppData\\Local\\Programs\\DockerDesktop\\resources\\bin\\docker.exe" -H "npipe:////./pipe/docker_engine" tag trackorganize-backend:1.0 %DOCKER_USERNAME%/trackorganize-backend:1.0
                     '''
 
+                    echo 'Docker image tagged successfully'
 
                     echo '========================================'
                     echo 'Pushing Docker image to Docker Hub'
                     echo '========================================'
 
                     bat '''
-                        "%DOCKER_EXE%" -H "%DOCKER_HOST%" push %DOCKER_USERNAME%/trackorganize-backend:1.0
+                        "C:\\Users\\IT\\AppData\\Local\\Programs\\DockerDesktop\\resources\\bin\\docker.exe" -H "npipe:////./pipe/docker_engine" push %DOCKER_USERNAME%/trackorganize-backend:1.0
                     '''
 
+                    echo 'Docker image pushed successfully'
 
                     echo '========================================'
                     echo 'Logging out from Docker Hub'
                     echo '========================================'
 
                     bat '''
-                        "%DOCKER_EXE%" -H "%DOCKER_HOST%" logout
+                        "C:\\Users\\IT\\AppData\\Local\\Programs\\DockerDesktop\\resources\\bin\\docker.exe" -H "npipe:////./pipe/docker_engine" logout
                     '''
                 }
             }
         }
     }
 
-
     post {
-
         success {
             echo '========================================'
-            echo 'COMPLETE TRACKORGANIZE CI/CD PIPELINE SUCCESS!'
+            echo 'TRACKORGANIZE CI/CD PIPELINE SUCCESSFUL'
             echo '========================================'
         }
 
