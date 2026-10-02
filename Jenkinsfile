@@ -7,31 +7,57 @@ pipeline {
 
     stages {
 
-        stage('Checkout') {
+        stage('Build') {
             steps {
-                echo 'Checking out source code from GitHub'
-                checkout scm
+                echo 'Building Spring Boot backend'
+
+                bat 'cd backend && mvn clean package -DskipTests'
             }
         }
 
-        stage('Build') {
+        stage('Start Backend') {
             steps {
-                echo 'Building Spring Boot application'
-                bat 'cd backend && mvn clean package -DskipTests'
+                echo 'Starting Spring Boot backend'
+
+                bat '''
+                    start "Spring Boot" /B cmd /c "cd backend && java -jar target\\backend-0.0.1-SNAPSHOT.jar"
+                '''
+
+                timeout(time: 30, unit: 'SECONDS') {
+                    bat '''
+                        :wait
+                        curl -f http://127.0.0.1:8081/ || (
+                            timeout /t 2 /nobreak >nul
+                            goto wait
+                        )
+                    '''
+                }
+            }
+        }
+
+        stage('Start Frontend') {
+            steps {
+                echo 'Starting React frontend'
+
+                bat '''
+                    start "React App" /B cmd /c "cd frontend && npm run dev -- --host 127.0.0.1"
+                '''
+
+                timeout(time: 30, unit: 'SECONDS') {
+                    bat '''
+                        :wait
+                        curl -f http://127.0.0.1:5173/ || (
+                            timeout /t 2 /nobreak >nul
+                            goto wait
+                        )
+                    '''
+                }
             }
         }
 
         stage('Test') {
             steps {
-                echo 'Starting React frontend'
-
-                bat '''
-                cd frontend
-                start "React App" /B cmd /c "npm run dev -- --host 127.0.0.1 > frontend.log 2>&1"
-                timeout /t 10 /nobreak
-                '''
-
-                echo 'Running Selenium test'
+                echo 'Running Selenium tests'
 
                 bat 'cd backend && mvn -Dtest=SeleniumTest test'
             }
