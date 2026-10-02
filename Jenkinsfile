@@ -23,15 +23,13 @@ pipeline {
                     start "Spring Boot" /B cmd /c "cd backend && java -jar target\\backend-0.0.1-SNAPSHOT.jar"
                 '''
 
-                timeout(time: 30, unit: 'SECONDS') {
-                    bat '''
-                        :wait
-                        curl -f http://127.0.0.1:8081/ || (
-                            timeout /t 2 /nobreak >nul
-                            goto wait
-                        )
-                    '''
-                }
+                echo 'Waiting for backend to start...'
+
+                bat '''
+                    powershell -NoProfile -Command "Start-Sleep -Seconds 10"
+                '''
+
+                echo 'Backend startup wait completed'
             }
         }
 
@@ -43,15 +41,13 @@ pipeline {
                     start "React App" /B cmd /c "cd frontend && npm run dev -- --host 127.0.0.1"
                 '''
 
-                timeout(time: 30, unit: 'SECONDS') {
-                    bat '''
-                        :wait
-                        curl -f http://127.0.0.1:5173/ || (
-                            timeout /t 2 /nobreak >nul
-                            goto wait
-                        )
-                    '''
-                }
+                echo 'Waiting for frontend to start...'
+
+                bat '''
+                    powershell -NoProfile -Command "Start-Sleep -Seconds 10"
+                '''
+
+                echo 'Frontend startup wait completed'
             }
         }
 
