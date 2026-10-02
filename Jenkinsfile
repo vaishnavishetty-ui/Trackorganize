@@ -130,10 +130,9 @@ pipeline {
 
         stage('Docker Push') {
             steps {
-
                 withCredentials([
                     usernamePassword(
-                        credentialsId: '5a0a5d64-e02d-47ff-a3c4-db3ea5f84ab',
+                        credentialsId: 'dockerhub-credentials',
                         usernameVariable: 'DOCKER_USERNAME',
                         passwordVariable: 'DOCKER_PASSWORD'
                     )
@@ -144,37 +143,25 @@ pipeline {
                     echo '========================================'
 
                     bat '''
-                        echo %DOCKER_PASSWORD% | "C:\\Users\\IT\\AppData\\Local\\Programs\\DockerDesktop\\resources\\bin\\docker.exe" -H "npipe:////./pipe/docker_engine" login -u "%DOCKER_USERNAME%" --password-stdin
+                        docker login -u "%DOCKER_USERNAME%" -p "%DOCKER_PASSWORD%"
                     '''
 
-                    echo 'Docker login successful'
-
-                    echo '========================================'
                     echo 'Tagging Docker image'
-                    echo '========================================'
 
                     bat '''
-                        "C:\\Users\\IT\\AppData\\Local\\Programs\\DockerDesktop\\resources\\bin\\docker.exe" -H "npipe:////./pipe/docker_engine" tag trackorganize-backend:1.0 %DOCKER_USERNAME%/trackorganize-backend:1.0
+                        docker tag trackorganize-backend:1.0 %DOCKER_USERNAME%/trackorganize-backend:1.0
                     '''
 
-                    echo 'Docker image tagged successfully'
-
-                    echo '========================================'
                     echo 'Pushing Docker image to Docker Hub'
-                    echo '========================================'
 
                     bat '''
-                        "C:\\Users\\IT\\AppData\\Local\\Programs\\DockerDesktop\\resources\\bin\\docker.exe" -H "npipe:////./pipe/docker_engine" push %DOCKER_USERNAME%/trackorganize-backend:1.0
+                        docker push %DOCKER_USERNAME%/trackorganize-backend:1.0
                     '''
 
-                    echo 'Docker image pushed successfully'
-
-                    echo '========================================'
                     echo 'Logging out from Docker Hub'
-                    echo '========================================'
 
                     bat '''
-                        "C:\\Users\\IT\\AppData\\Local\\Programs\\DockerDesktop\\resources\\bin\\docker.exe" -H "npipe:////./pipe/docker_engine" logout
+                        docker logout
                     '''
                 }
             }
