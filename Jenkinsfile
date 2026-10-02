@@ -79,7 +79,7 @@ pipeline {
 
                 bat '''
                     cd backend
-                    "C:\Users\IT\AppData\Local\Programs\DockerDesktop\resources\bin\docker.exe" build -t trackorganize-backend:1.0 .
+                    "C:\\Users\\IT\\AppData\\Local\\Programs\\DockerDesktop\\resources\\bin\\docker.exe" build -t trackorganize-backend:1.0 .
                 '''
             }
         }
@@ -97,25 +97,25 @@ pipeline {
                     echo 'Logging in to Docker Hub'
 
                     bat '''
-                        "C:\\Program Files\\Docker\\Docker\\resources\\bin\\docker.exe" login -u "%DOCKER_USERNAME%" -p "%DOCKER_PASSWORD%"
+                        "C:\\Users\\IT\\AppData\\Local\\Programs\\DockerDesktop\\resources\\bin\\docker.exe" login -u "%DOCKER_USERNAME%" -p "%DOCKER_PASSWORD%"
                     '''
 
                     echo 'Tagging Docker image'
 
                     bat '''
-                        "C:\\Program Files\\Docker\\Docker\\resources\\bin\\docker.exe" tag trackorganize-backend:1.0 %DOCKER_USERNAME%/trackorganize-backend:1.0
+                        "C:\\Users\\IT\\AppData\\Local\\Programs\\DockerDesktop\\resources\\bin\\docker.exe" tag trackorganize-backend:1.0 %DOCKER_USERNAME%/trackorganize-backend:1.0
                     '''
 
                     echo 'Pushing Docker image to Docker Hub'
 
                     bat '''
-                        "C:\\Program Files\\Docker\\Docker\\resources\\bin\\docker.exe" push %DOCKER_USERNAME%/trackorganize-backend:1.0
+                        "C:\\Users\\IT\\AppData\\Local\\Programs\\DockerDesktop\\resources\\bin\\docker.exe" push %DOCKER_USERNAME%/trackorganize-backend:1.0
                     '''
 
                     echo 'Logging out from Docker Hub'
 
                     bat '''
-                        "C:\\Program Files\\Docker\\Docker\\resources\\bin\\docker.exe" logout
+                        "C:\\Users\\IT\\AppData\\Local\\Programs\\DockerDesktop\\resources\\bin\\docker.exe" logout
                     '''
                 }
             }
