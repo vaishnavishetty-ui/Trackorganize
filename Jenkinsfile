@@ -142,25 +142,25 @@ pipeline {
                     echo 'Logging in to Docker Hub'
                     echo '========================================'
 
-                    bat '''
-                        echo %DOCKER_PASSWORD% | docker login -u "%DOCKER_USERNAME%" --password-stdin
+                    powershell '''
+                        $env:DOCKER_PASSWORD | docker login --username $env:DOCKER_USERNAME --password-stdin
                     '''
 
-                    echo 'Tagging Docker image'
+                    echo 'Docker login successful'
 
-                    bat '''
-                        docker tag trackorganize-backend:1.0 %DOCKER_USERNAME%/trackorganize-backend:1.0
+                    powershell '''
+                        docker tag trackorganize-backend:1.0 "$env:DOCKER_USERNAME/trackorganize-backend:1.0"
                     '''
 
                     echo 'Pushing Docker image to Docker Hub'
 
-                    bat '''
-                        docker push %DOCKER_USERNAME%/trackorganize-backend:1.0
+                    powershell '''
+                        docker push "$env:DOCKER_USERNAME/trackorganize-backend:1.0"
                     '''
 
-                    echo 'Logging out from Docker Hub'
+                    echo 'Docker image pushed successfully'
 
-                    bat '''
+                    powershell '''
                         docker logout
                     '''
                 }
