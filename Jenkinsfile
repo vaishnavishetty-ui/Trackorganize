@@ -77,7 +77,10 @@ pipeline {
             steps {
                 echo 'Building Docker image'
 
-                bat 'cd backend && docker build -t trackorganize-backend:1.0 .'
+                bat '''
+                    cd backend
+                    "C:\Users\IT\AppData\Local\Programs\DockerDesktop\resources\bin\docker.exe" build -t trackorganize-backend:1.0 .
+                '''
             }
         }
 
@@ -93,19 +96,27 @@ pipeline {
 
                     echo 'Logging in to Docker Hub'
 
-                    bat 'docker login -u "%DOCKER_USERNAME%" -p "%DOCKER_PASSWORD%"'
+                    bat '''
+                        "C:\\Program Files\\Docker\\Docker\\resources\\bin\\docker.exe" login -u "%DOCKER_USERNAME%" -p "%DOCKER_PASSWORD%"
+                    '''
 
                     echo 'Tagging Docker image'
 
-                    bat 'docker tag trackorganize-backend:1.0 %DOCKER_USERNAME%/trackorganize-backend:1.0'
+                    bat '''
+                        "C:\\Program Files\\Docker\\Docker\\resources\\bin\\docker.exe" tag trackorganize-backend:1.0 %DOCKER_USERNAME%/trackorganize-backend:1.0
+                    '''
 
                     echo 'Pushing Docker image to Docker Hub'
 
-                    bat 'docker push %DOCKER_USERNAME%/trackorganize-backend:1.0'
+                    bat '''
+                        "C:\\Program Files\\Docker\\Docker\\resources\\bin\\docker.exe" push %DOCKER_USERNAME%/trackorganize-backend:1.0
+                    '''
 
                     echo 'Logging out from Docker Hub'
 
-                    bat 'docker logout'
+                    bat '''
+                        "C:\\Program Files\\Docker\\Docker\\resources\\bin\\docker.exe" logout
+                    '''
                 }
             }
         }
