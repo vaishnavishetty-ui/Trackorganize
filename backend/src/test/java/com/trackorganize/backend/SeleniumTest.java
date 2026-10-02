@@ -24,7 +24,7 @@ public class SeleniumTest {
     void testAddTask() {
 
         // Open Trackorganize application
-        driver.get("http://localhost:5173/add-task");
+        driver.get("http://127.0.0.1:5173/add-task");
 
         // Enter task title
         driver.findElement(By.name("title"))

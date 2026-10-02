@@ -26,10 +26,10 @@ pipeline {
                 echo 'Waiting for backend to start...'
 
                 bat '''
-                    powershell -NoProfile -Command "Start-Sleep -Seconds 10"
+                    powershell -NoProfile -Command "$deadline=(Get-Date).AddSeconds(30); do { if ((Test-NetConnection -ComputerName 127.0.0.1 -Port 8081 -WarningAction SilentlyContinue).TcpTestSucceeded) { exit 0 }; Start-Sleep -Seconds 2 } while ((Get-Date) -lt $deadline); Write-Host 'Backend failed to start'; exit 1"
                 '''
 
-                echo 'Backend startup wait completed'
+                echo 'Backend is running on port 8081'
             }
         }
 
@@ -38,16 +38,16 @@ pipeline {
                 echo 'Starting React frontend'
 
                 bat '''
-                    start "React App" /B cmd /c "cd frontend && npm run dev -- --host 127.0.0.1"
+                    start "React App" /B cmd /c "cd frontend && npm run dev -- --host 127.0.0.1 > frontend.log 2>&1"
                 '''
 
                 echo 'Waiting for frontend to start...'
 
                 bat '''
-                    powershell -NoProfile -Command "Start-Sleep -Seconds 10"
+                    powershell -NoProfile -Command "$deadline=(Get-Date).AddSeconds(30); do { if ((Test-NetConnection -ComputerName 127.0.0.1 -Port 5173 -WarningAction SilentlyContinue).TcpTestSucceeded) { exit 0 }; Start-Sleep -Seconds 2 } while ((Get-Date) -lt $deadline); Write-Host 'Frontend failed to start'; exit 1"
                 '''
 
-                echo 'Frontend startup wait completed'
+                echo 'Frontend is running on port 5173'
             }
         }
 
