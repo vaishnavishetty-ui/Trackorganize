@@ -20,13 +20,15 @@ pipeline {
                 echo 'Starting Spring Boot backend'
 
                 bat '''
-                    start "Spring Boot" /B cmd /c "cd backend && java -jar target\\backend-0.0.1-SNAPSHOT.jar"
+                    if exist backend.log del /f /q backend.log
+
+                    start "Spring Boot" /B cmd /c "cd /d backend && java -jar target\\backend-0.0.1-SNAPSHOT.jar > backend.log 2>&1"
                 '''
 
                 echo 'Waiting for backend to start...'
 
                 bat '''
-                    powershell -NoProfile -Command "$deadline=(Get-Date).AddSeconds(30); do { if ((Test-NetConnection -ComputerName 127.0.0.1 -Port 8081 -WarningAction SilentlyContinue).TcpTestSucceeded) { exit 0 }; Start-Sleep -Seconds 2 } while ((Get-Date) -lt $deadline); Write-Host 'Backend failed to start'; exit 1"
+                    powershell -NoProfile -Command "$deadline=(Get-Date).AddSeconds(30); do { if ((Test-NetConnection -ComputerName 127.0.0.1 -Port 8081 -WarningAction SilentlyContinue).TcpTestSucceeded) { exit 0 }; Start-Sleep -Seconds 2 } while ((Get-Date) -lt $deadline); Write-Host '===== BACKEND LOG ====='; if (Test-Path 'backend\\backend.log') { Get-Content 'backend\\backend.log' } else { Write-Host 'backend.log was not created' }; exit 1"
                 '''
 
                 echo 'Backend is running on port 8081'
