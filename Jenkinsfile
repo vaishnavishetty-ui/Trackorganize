@@ -72,18 +72,15 @@ pipeline {
             }
         }
 
-        stage('Test') {
-            steps {
-                echo '========================================'
-                echo 'Running Selenium tests'
-                echo '========================================'
+       stage('Test') {
+    steps {
+        echo '========================================'
+        echo 'Running Selenium tests'
+        echo '========================================'
 
-                bat '''
-                    cd backend
-                    mvn -Dtest=SeleniumTest test
-                '''
-            }
-        }
+        bat 'set "JAVA_HOME=C:\\Program Files\\Java\\jdk-25.0.3" && cd backend && mvn -Dtest=SeleniumTest test'
+    }
+}
 
         stage('Docker Check') {
             steps {
