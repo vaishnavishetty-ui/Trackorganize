@@ -83,29 +83,31 @@ pipeline {
 }
 
         stage('Docker Check') {
-            steps {
-                echo '========================================'
-                echo 'Checking Docker installation'
-                echo '========================================'
+    steps {
+        echo '========================================'
+        echo 'Checking Docker installation'
+        echo '========================================'
 
-                bat '''
-                    echo Docker executable:
-                    "C:\\Users\\IT\\AppData\\Local\\Programs\\DockerDesktop\\resources\\bin\\docker.exe" --version
+        bat '''
+            set "DOCKER_EXE=C:\\Users\\Vaishnavi\\AppData\\Local\\Programs\\DockerDesktop\\resources\\bin\\docker.exe"
 
-                    echo.
-                    echo Docker location:
-                    where.exe docker
+            echo Docker executable:
+            "%DOCKER_EXE%" --version
 
-                    echo.
-                    echo Docker context:
-                    "C:\\Users\\IT\\AppData\\Local\\Programs\\DockerDesktop\\resources\\bin\\docker.exe" context show
+            echo.
+            echo Docker location:
+            where.exe docker
 
-                    echo.
-                    echo Docker info:
-                    "C:\\Users\\IT\\AppData\\Local\\Programs\\DockerDesktop\\resources\\bin\\docker.exe" -H "npipe:////./pipe/docker_engine" info
-                '''
-            }
-        }
+            echo.
+            echo Docker context:
+            "%DOCKER_EXE%" context show
+
+            echo.
+            echo Docker info:
+            "%DOCKER_EXE%" info
+        '''
+    }
+}
 
         stage('Docker Build') {
             steps {
@@ -116,7 +118,7 @@ pipeline {
                 bat '''
                     cd backend
 
-                    "C:\\Users\\IT\\AppData\\Local\\Programs\\DockerDesktop\\resources\\bin\\docker.exe" -H "npipe:////./pipe/docker_engine" build -t trackorganize-backend:1.0 .
+                    "C:\\Users\\Vaishnavi\\AppData\\Local\\Programs\\DockerDesktop\\resources\\bin\\docker.exe" -H "npipe:////./pipe/docker_engine" build -t trackorganize-backend:1.0 .
                 '''
             }
         }
