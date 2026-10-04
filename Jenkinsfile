@@ -144,19 +144,4 @@ pipeline {
             '''
         }
     }
-    
-
-    post {
-        success {
-            echo '========================================'
-            echo 'TRACKORGANIZE CI/CD PIPELINE SUCCESSFUL'
-            echo '========================================'
-        }
-
-        failure {
-            echo '========================================'
-            echo 'TRACKORGANIZE PIPELINE FAILED'
-            echo '========================================'
-        }
-    }
 }
