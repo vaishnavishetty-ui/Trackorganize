@@ -10,10 +10,10 @@ pipeline {
         stage('Build') {
     steps {
         echo '========================================'
-        echo 'Java and Maven Diagnostics'
+        echo 'Building Spring Boot backend'
         echo '========================================'
 
-        bat 'set "JAVA_HOME=C:\\Program Files\\Java\\jdk-25.0.3" && echo JAVA_HOME=[%JAVA_HOME%] && java -version && mvn -version'
+        bat 'set "JAVA_HOME=C:\\Program Files\\Java\\jdk-25.0.3" && cd backend && mvn clean package -DskipTests'
     }
 }
 
