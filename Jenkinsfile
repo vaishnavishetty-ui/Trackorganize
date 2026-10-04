@@ -133,14 +133,25 @@ pipeline {
             )
         ]) {
             bat '''
-                echo Logging into Docker Hub...
-                docker login -u "%DOCKER_USERNAME%" -p "%DOCKER_PASSWORD%"
+                set "DOCKER_EXE=C:\\Users\\Vaishnavi\\AppData\\Local\\Programs\\DockerDesktop\\resources\\bin\\docker.exe"
 
-                docker tag trackorganize-backend:1.0 %DOCKER_USERNAME%/trackorganize-backend:1.0
+                echo ========================================
+                echo Logging into Docker Hub
+                echo ========================================
 
-                docker push %DOCKER_USERNAME%/trackorganize-backend:1.0
+                "%DOCKER_EXE%" login -u "%DOCKER_USERNAME%" -p "%DOCKER_PASSWORD%"
 
-                docker logout
+                echo.
+                echo Tagging Docker image...
+                "%DOCKER_EXE%" tag trackorganize-backend:1.0 %DOCKER_USERNAME%/trackorganize-backend:1.0
+
+                echo.
+                echo Pushing Docker image...
+                "%DOCKER_EXE%" push %DOCKER_USERNAME%/trackorganize-backend:1.0
+
+                echo.
+                echo Logging out...
+                "%DOCKER_EXE%" logout
             '''
         }
     }
