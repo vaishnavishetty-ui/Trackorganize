@@ -138,19 +138,25 @@ pipeline {
                 echo ========================================
                 echo Logging into Docker Hub
                 echo ========================================
-
                 "%DOCKER_EXE%" login -u "%DOCKER_USERNAME%" -p "%DOCKER_PASSWORD%"
+                if errorlevel 1 exit /b 1
 
-                echo.
-                echo Tagging Docker image...
+                echo ========================================
+                echo Tagging Docker image
+                echo ========================================
                 "%DOCKER_EXE%" tag trackorganize-backend:1.0 %DOCKER_USERNAME%/trackorganize-backend:1.0
+                if errorlevel 1 exit /b 1
 
-                echo.
-                echo Pushing Docker image...
+                echo ========================================
+                echo Pushing Docker image
+                echo ========================================
                 "%DOCKER_EXE%" push %DOCKER_USERNAME%/trackorganize-backend:1.0
+                if errorlevel 1 exit /b 1
 
-                echo.
-                echo Logging out...
+                echo ========================================
+                echo Docker Push Successful
+                echo ========================================
+
                 "%DOCKER_EXE%" logout
             '''
         }
