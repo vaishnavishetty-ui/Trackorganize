@@ -124,44 +124,27 @@ pipeline {
         }
 
         stage('Docker Push') {
-            steps {
-                withCredentials([
-                    usernamePassword(
-                        credentialsId: 'dockerhub-credentials',
-                        usernameVariable: 'DOCKER_USERNAME',
-                        passwordVariable: 'DOCKER_PASSWORD'
-                    )
-                ]) {
+    steps {
+        withCredentials([
+            usernamePassword(
+                credentialsId: 'dockerhub-credentials',
+                usernameVariable: 'DOCKER_USERNAME',
+                passwordVariable: 'DOCKER_PASSWORD'
+            )
+        ]) {
+            bat '''
+                echo Logging into Docker Hub...
+                docker login -u "%DOCKER_USERNAME%" -p "%DOCKER_PASSWORD%"
 
-                    echo '========================================'
-                    echo 'Logging in to Docker Hub'
-                    echo '========================================'
+                docker tag trackorganize-backend:1.0 %DOCKER_USERNAME%/trackorganize-backend:1.0
 
-                    powershell '''
-                        $env:DOCKER_PASSWORD | docker login --username $env:DOCKER_USERNAME --password-stdin
-                    '''
+                docker push %DOCKER_USERNAME%/trackorganize-backend:1.0
 
-                    echo 'Docker login successful'
-
-                    powershell '''
-                        docker tag trackorganize-backend:1.0 "$env:DOCKER_USERNAME/trackorganize-backend:1.0"
-                    '''
-
-                    echo 'Pushing Docker image to Docker Hub'
-
-                    powershell '''
-                        docker push "$env:DOCKER_USERNAME/trackorganize-backend:1.0"
-                    '''
-
-                    echo 'Docker image pushed successfully'
-
-                    powershell '''
-                        docker logout
-                    '''
-                }
-            }
+                docker logout
+            '''
         }
     }
+    
 
     post {
         success {
