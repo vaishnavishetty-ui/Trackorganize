@@ -8,17 +8,22 @@ pipeline {
     stages {
 
         stage('Build') {
-            steps {
-                echo '========================================'
-                echo 'Building Spring Boot backend'
-                echo '========================================'
+    steps {
+        echo '========================================'
+        echo 'Checking Java'
+        echo '========================================'
 
-                bat '''
-                    cd backend
-                    mvn clean package -DskipTests
-                '''
-            }
-        }
+        bat 'echo JAVA_HOME=%JAVA_HOME%'
+        bat 'java -version'
+        bat 'where java'
+
+        echo '========================================'
+        echo 'Building Spring Boot backend'
+        echo '========================================'
+
+        bat 'cd backend && mvn clean package -DskipTests'
+    }
+}
 
         stage('Start Backend') {
             steps {
