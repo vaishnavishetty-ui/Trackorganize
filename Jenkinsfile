@@ -13,11 +13,7 @@ pipeline {
         echo 'Java and Maven Diagnostics'
         echo '========================================'
 
-        bat 'echo JAVA_HOME=[%JAVA_HOME%]'
-        bat 'where java'
-        bat 'java -version'
-        bat 'where mvn'
-        bat 'mvn -version'
+        bat 'set "JAVA_HOME=C:\\Program Files\\Java\\jdk-25.0.3" && echo JAVA_HOME=[%JAVA_HOME%] && java -version && mvn -version'
     }
 }
 
